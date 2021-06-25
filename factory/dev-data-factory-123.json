@@ -1,0 +1,9 @@
+{
+	"name": "dev-data-factory-123",
+	"location": "ukwest",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9f8e6f4a-f68a-411d-8a4d-82fb30097ae4",
+		"tenantId": "d594c00a-7484-463c-b335-1d0abefafb20"
+	}
+}
