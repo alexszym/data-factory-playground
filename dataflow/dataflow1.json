@@ -1,0 +1,41 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSqlTable1",
+						"type": "DatasetReference"
+					},
+					"name": "PatientDataTable"
+				},
+				{
+					"dataset": {
+						"referenceName": "PostcodeMap",
+						"type": "DatasetReference"
+					},
+					"name": "PostcodeMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "PostcodeMap",
+						"type": "DatasetReference"
+					},
+					"name": "AdmissionCodeMap"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "PatientDataWithPostcodeValue"
+				},
+				{
+					"name": "Select"
+				}
+			],
+			"script": "source(output(\n\t\tId as string,\n\t\tName as string,\n\t\tAdmissionDate as timestamp,\n\t\tDateOfBirth as timestamp,\n\t\tPostcode as string,\n\t\tAdmissionCode as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> PatientDataTable\nsource(output(\n\t\tKey as string,\n\t\tValue as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> PostcodeMap\nsource(output(\n\t\tKey as integer,\n\t\tValue as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> AdmissionCodeMap\nPatientDataTable, PostcodeMap join(Postcode == Key,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> PatientDataWithPostcodeValue\nPatientDataWithPostcodeValue select(mapColumn(\n\t\tId,\n\t\tName,\n\t\tAdmissionDate,\n\t\tDateOfBirth,\n\t\tPostcode,\n\t\tAdmissionCode,\n\t\tPostcodeValue = Value\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select"
+		}
+	}
+}
