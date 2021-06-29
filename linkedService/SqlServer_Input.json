@@ -13,6 +13,10 @@
 				},
 				"secretName": "sql-server-pwd"
 			}
+		},
+		"connectVia": {
+			"referenceName": "DevIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
