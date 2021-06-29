@@ -1,0 +1,22 @@
+{
+	"name": "AzureSqlDatabase",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=dev-sql-server-124.database.windows.net;Initial Catalog=test-data;User ID=alex123",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "sql-server-pwd"
+			}
+		},
+		"connectVia": {
+			"referenceName": "DevIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
