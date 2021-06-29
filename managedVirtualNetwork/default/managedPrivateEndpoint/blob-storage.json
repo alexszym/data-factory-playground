@@ -1,0 +1,7 @@
+{
+	"name": "blob-storage",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/7b37a8d6-5e6d-4466-a3d5-4beb1190f7a4/resourceGroups/Dev/providers/Microsoft.Storage/storageAccounts/mydevstorage123",
+		"groupId": "blob"
+	}
+}
