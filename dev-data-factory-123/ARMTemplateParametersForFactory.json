@@ -1,0 +1,36 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "dev-data-factory-123"
+		},
+		"AzureBlobStorage_connectionString": {
+			"value": ""
+		},
+		"AzureSqlDatabase_connectionString": {
+			"value": ""
+		},
+		"AzureKeyVault_properties_typeProperties_baseUrl": {
+			"value": "https://azure-data-factory-kvt.vault.azure.net/"
+		},
+		"blob-storage_properties_privateLinkResourceId": {
+			"value": "/subscriptions/7b37a8d6-5e6d-4466-a3d5-4beb1190f7a4/resourceGroups/Dev/providers/Microsoft.Storage/storageAccounts/mydevstorage123"
+		},
+		"blob-storage_properties_groupId": {
+			"value": "blob"
+		},
+		"sql-test-db_properties_privateLinkResourceId": {
+			"value": "/subscriptions/7b37a8d6-5e6d-4466-a3d5-4beb1190f7a4/resourceGroups/Dev/providers/Microsoft.Sql/servers/dev-sql-server-123"
+		},
+		"sql-test-db_properties_groupId": {
+			"value": "sqlServer"
+		},
+		"sql-test-data_properties_privateLinkResourceId": {
+			"value": "/subscriptions/7b37a8d6-5e6d-4466-a3d5-4beb1190f7a4/resourceGroups/Dev/providers/Microsoft.Sql/servers/dev-sql-server-124"
+		},
+		"sql-test-data_properties_groupId": {
+			"value": "sqlServer"
+		}
+	}
+}
