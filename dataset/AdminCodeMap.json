@@ -10,6 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": "map_adm.csv",
 				"container": "devcontainer"
 			},
 			"columnDelimiter": ",",
