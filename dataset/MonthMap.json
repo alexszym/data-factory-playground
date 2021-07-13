@@ -10,7 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "map_month.csv",
+				"fileName": "map_month2.csv",
 				"container": "devcontainer"
 			},
 			"columnDelimiter": ",",
@@ -18,15 +18,6 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "month",
-				"type": "String"
-			},
-			{
-				"name": "val",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }

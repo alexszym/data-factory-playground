@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "Prepare data",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -24,6 +24,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "AdminCodeMap"
+				},
+				{
+					"dataset": {
+						"referenceName": "MonthMap",
+						"type": "DatasetReference"
+					},
+					"name": "MonthMap"
 				}
 			],
 			"sinks": [],
@@ -47,10 +54,28 @@
 					"name": "PrepareForMedian"
 				},
 				{
-					"name": "Median"
+					"name": "AdminCodeMedian"
+				},
+				{
+					"name": "Union1"
+				},
+				{
+					"name": "AdminCodeMapWithDefault"
+				},
+				{
+					"name": "PatientDataWithPostcodeAndAdminCodeValue"
+				},
+				{
+					"name": "DeriveMonth"
+				},
+				{
+					"name": "PatientDataWith3Values"
+				},
+				{
+					"name": "DeriveAge"
 				}
 			],
-			"script": "source(output(\n\t\tId as string,\n\t\tName as string,\n\t\tAdmissionDate as timestamp,\n\t\tDateOfBirth as timestamp,\n\t\tPostcode as string,\n\t\tAdmissionCode as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> PatientDataTable\nsource(output(\n\t\tKey as string,\n\t\tValue as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tskipLines: 1) ~> PostcodeMap\nsource(output(\n\t\tadm_code as integer,\n\t\tval as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> AdminCodeMap\nPatientDataTable, PostcodeMapWithDefault join(Postcode === Key,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> PatientDataWithPostcodeValue\nPatientDataWithPostcodeValue select(mapColumn(\n\t\tId,\n\t\tAdmissionDate,\n\t\tDateOfBirth,\n\t\tAdmissionCode,\n\t\tPostcodeValue = Value\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select\nPostcodeMap aggregate(Value = toFloat(avg(Value))) ~> AveragePostcodeValue\nAveragePostcodeValue, PostcodeMap union(byName: true)~> PostcodeMapWithDefault\nAdminCodeMap sort(asc(val, true)) ~> AdminCodeMapSorted\nAdminCodeMapSorted aggregate(groupBy(val,\n\t\t{} = ERROR_FUNCTION('')),\n\tcollectionx = collect(val),\n\t\ttotalx = count()) ~> PrepareForMedian\nPrepareForMedian derive(median = collectionx[toInteger(round(totalx/2)+1)]) ~> Median"
+			"script": "source(output(\n\t\tId as string,\n\t\tName as string,\n\t\tAdmissionDate as timestamp,\n\t\tDateOfBirth as timestamp,\n\t\tPostcode as string,\n\t\tAdmissionCode as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> PatientDataTable\nsource(output(\n\t\tKey as string,\n\t\tValue as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tskipLines: 1) ~> PostcodeMap\nsource(output(\n\t\tadm_code as integer,\n\t\tval as float\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> AdminCodeMap\nsource(output(\n\t\tmonth as short,\n\t\tmonth_val as double\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> MonthMap\nPatientDataTable, PostcodeMapWithDefault join(Postcode === Key,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> PatientDataWithPostcodeValue\nDeriveAge select(mapColumn(\n\t\tId,\n\t\tPostcodeValue = Value,\n\t\tAdminCodeValue = val,\n\t\tMonthValue = month_val,\n\t\tAge\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select\nPostcodeMap aggregate(Value = toFloat(avg(Value))) ~> AveragePostcodeValue\nAveragePostcodeValue, PostcodeMap union(byName: true)~> PostcodeMapWithDefault\nAdminCodeMap sort(asc(val, true)) ~> AdminCodeMapSorted\nAdminCodeMapSorted aggregate(collectionx = collect(val),\n\t\ttotalx = count()) ~> PrepareForMedian\nPrepareForMedian derive(val = iif(totalx%2 === 0, (collectionx[toInteger(totalx/2)] + collectionx[toInteger(totalx/2) +1])/2, collectionx[toInteger(round(totalx/2)+1)])) ~> AdminCodeMedian\nAdminCodeMedian, AdminCodeMapSorted union(byName: true)~> Union1\nUnion1 select(mapColumn(\n\t\tval,\n\t\tadm_code\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> AdminCodeMapWithDefault\nPatientDataWithPostcodeValue, AdminCodeMapWithDefault join(AdmissionCode === adm_code,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> PatientDataWithPostcodeAndAdminCodeValue\nPatientDataWithPostcodeAndAdminCodeValue derive(Month = month(AdmissionDate)) ~> DeriveMonth\nDeriveMonth, MonthMap join(DeriveMonth@Month === MonthMap@month,\n\tjoinType:'left',\n\tbroadcast: 'auto')~> PatientDataWith3Values\nPatientDataWith3Values derive(Age = iif(isNull(DateOfBirth), 0f,\r\n toFloat(minus(AdmissionDate, DateOfBirth))/days(365))) ~> DeriveAge"
 		}
 	}
 }
