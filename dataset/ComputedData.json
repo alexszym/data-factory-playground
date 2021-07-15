@@ -1,5 +1,5 @@
 {
-	"name": "ComputedPatientData",
+	"name": "ComputedData",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage",
