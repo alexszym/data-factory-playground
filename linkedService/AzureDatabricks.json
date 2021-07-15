@@ -1,0 +1,23 @@
+{
+	"name": "AzureDatabricks",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "https://adb-7852500368405688.8.azuredatabricks.net",
+			"accessToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "AzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "databricks-pat"
+			},
+			"existingClusterId": "0709-151534-allot607"
+		},
+		"connectVia": {
+			"referenceName": "DevIntegrationRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
